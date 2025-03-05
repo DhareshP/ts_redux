@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store/store';
-import { setSelectedClass } from '../../store/slices/classSlice';
-import { setStudentsForClass } from '../../store/slices/studentSlice';
+import { fetchClasses, setSelectedClass } from '../../store/slices/classSlice';
+import { fetchStudents } from '../../store/slices/studentSlice';
 import Header from '../layout/Header';
 import Footer from '../layout/Footer';
 import { 
@@ -13,25 +13,34 @@ import {
 const StudentPage: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
 
-  const { classes, selectedClassId } = useSelector((state: RootState) => state.classes);
+  const { classes, selectedClassId, status, error } = useSelector((state: RootState) => state.classes);
   const { students } = useSelector((state: RootState) => state.students);
 
-  const handleClassChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    const classId = e.target.value as string;
+  // ✅ Fetch classes when the component mounts
+  useEffect(() => {
+    dispatch(fetchClasses());
+  }, [dispatch]);
+
+  // ✅ Handle class selection and fetch students
+  const handleClassChange = (e: any) => {
+    const classId = e.target.value;
     dispatch(setSelectedClass(classId));
-    dispatch(setStudentsForClass(classId));  // Filter students for the selected class
+    dispatch(fetchStudents(classId)); // ✅ Fetch students when class is selected
   };
+
+  if (status === 'loading') return <p>Loading classes...</p>;
+  if (status === 'failed') return <p>Error: {error}</p>;
 
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh">
-      {/* Header */}
+      {/* ✅ Header */}
       <Header />
 
-      {/* Main Content */}
+      {/* ✅ Main Content */}
       <Box flexGrow={1} p={3} bgcolor="#f5f5f5" display="flex" justifyContent="center">
         <Paper elevation={3} sx={{ p: 3, width: '100%', maxWidth: 1000, backgroundColor: 'white', display: 'flex' }}>
           
-          {/* Left Side - Class Dropdown */}
+          {/* ✅ Left Side - Class Dropdown */}
           <Box sx={{ width: '250px', p: 2, borderRight: '1px solid #ddd' }}>
             <Typography variant="h6" gutterBottom>Select Class</Typography>
             <FormControl fullWidth>
@@ -42,7 +51,7 @@ const StudentPage: React.FC = () => {
               >
                 <MenuItem value="">-- Select Class --</MenuItem>
                 {classes.map((cls) => (
-                  <MenuItem key={cls.id} value={cls.id}>
+                  <MenuItem key={cls.id} value={cls.classId}>
                     {cls.className}
                   </MenuItem>
                 ))}
@@ -50,18 +59,18 @@ const StudentPage: React.FC = () => {
             </FormControl>
           </Box>
 
-          {/* Right Side - Class Details and Students */}
+          {/* ✅ Right Side - Class Details and Students */}
           <Box sx={{ flex: 1, p: 2 }}>
-            {/* Class Details */}
+            {/* ✅ Show selected class name */}
             {selectedClassId && (
               <Paper sx={{ p: 2, mb: 3, backgroundColor: '#f9f9f9' }}>
                 <Typography variant="h6">Class Details</Typography>
-                <Typography>Class ID: {selectedClassId}</Typography>
+                <Typography>Class Name: {classes.find(cls => cls.classId === selectedClassId)?.className || 'N/A'}</Typography>
                 <Typography>Number of Students: {students.length}</Typography>
               </Paper>
             )}
 
-            {/* Students List */}
+            {/* ✅ Students List */}
             <Typography variant="h6" gutterBottom>Students List</Typography>
             <Divider sx={{ mb: 2 }} />
             {students.length > 0 ? (
@@ -69,15 +78,20 @@ const StudentPage: React.FC = () => {
                 <Table>
                   <TableHead>
                     <TableRow sx={{ backgroundColor: '#f0f0f0' }}>
-                      <TableCell sx={{ fontWeight: 'bold' }}>Roll Number</TableCell>
-                      <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>id</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Roll Number</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Ph Number</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {students.map((student) => (
                       <TableRow key={student.id}>
-                        <TableCell>{student.rollNumber}</TableCell>
-                        <TableCell>{student.name}</TableCell>
+                        <TableCell>{student.id}</TableCell>
+                        <TableCell>{student.studentId}</TableCell>
+                        <TableCell>{student.studentName}</TableCell>
+                        <TableCell>{student.contactNumber}</TableCell>
+                        
                       </TableRow>
                     ))}
                   </TableBody>
@@ -91,7 +105,7 @@ const StudentPage: React.FC = () => {
         </Paper>
       </Box>
 
-      {/* Footer */}
+      {/* ✅ Footer */}
       <Footer />
     </Box>
   );

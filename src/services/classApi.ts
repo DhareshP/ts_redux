@@ -1,12 +1,13 @@
 import axios from 'axios';
 
 export const fetchAllClasses = async () => {
-  const token = localStorage.getItem('token');  // Get token from localStorage
-  const response = await axios.get('http://localhost:8080/dms/api/classes', {
-    headers: {
-      Authorization: `Bearer ${token}`,  // Add token to headers
-    },
+  const token = localStorage.getItem('token');  
+  console.log('Fetching classes from API...');
+
+  const response = await axios.get('https://stage.techeazyconsulting.com/dms/api/classes', {
+    headers: { Authorization: `Bearer ${token}` },
   });
 
+  console.log('API Response:', response.data);
   return response.data;
 };
