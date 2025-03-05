@@ -20,6 +20,9 @@ import { getThemeForRoles } from './components/theme/theme';
 const App: React.FC = () => {
   const theme = getThemeForRoles([]); // Replace with your role-based theme logic
 
+  // Wrap the whole app in Redux Provider so all components can access the store.
+  // Wrap the whole app in AuthProvider, custom context provider to handle authentication state.
+  //
   return (
     <Provider store={store}>
     <AuthProvider>
