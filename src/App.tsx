@@ -14,6 +14,10 @@ import SignupPage from './components/pages/Signup';
 import HomePage from './components/pages/Home';
 import StudentPage from './components/pages/StudentPage';
 
+import LinkedInCallbackPage from './components/pages/Linkedin/LinkedinCallbackPage';
+import ProfilePage from './components/pages/Linkedin/ProfilePage';
+import LinkedInSearchPage from './components/pages/Linkedin/LinkedinSearchPage';
+
 import { getThemeForRoles } from './components/theme/theme';
 
 // Main App Component
@@ -47,6 +51,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={isAuthenticated ? <Navigate to="/home" /> : <LoginPage />} />
       <Route path="/signup" element={isAuthenticated ? <Navigate to="/home" /> : <SignupPage />} />
+      
 
       {/* Private Routes (only show if authenticated) */}
       {isAuthenticated ? (
@@ -54,6 +59,9 @@ const AppRoutes: React.FC = () => {
           <Route path="/home" element={<HomePage />} />
           <Route path="/students" element={<StudentPage />} />
           <Route path="*" element={<Navigate to="/home" />} /> 
+          <Route path = "/linkedin/callback" element={<LinkedInCallbackPage />} />
+          <Route path = "/linkedin/profile" element={<ProfilePage />} />
+          <Route path="/linkedin/search" element={<LinkedInSearchPage />} />
         </>
       ) : (
         <>
